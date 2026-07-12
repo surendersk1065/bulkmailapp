@@ -5,7 +5,13 @@ const mongoose = require("mongoose")
 
 const app = express()
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: "https://bulkmailapp-nine.vercel.app",
+    methods: ["GET", "POST"],
+    credentials: true
+}))
+
+app.use(express.json())
 app.listen(3000, function () {
     console.log("server started")
 })
@@ -20,8 +26,6 @@ const details = mongoose.model("details", {}, "bulkmail")
 
 const nodemailer = require("nodemailer")
 
-
-
 app.post("/sendmail", function (req, res) {
     var msg = req.body.msg
     var email = req.body.email
@@ -34,28 +38,29 @@ app.post("/sendmail", function (req, res) {
                 pass: data[0].toJSON().pass
             }
         })
-        new Promise(async function (resolve, reject) {
-            try {
-                for (i = 0; i < email.length; i++) {
-                    await transporter.sendMail(
-                        {
-                            from: "surendersk1065@gmail.com",
-                            to: email[i],
-                            subject: "A message from node mailer",
-                            text: msg
-                        },
-                    )
-                }
-                resolve("success")
-            }
-            catch (error) {
-                resject("failed")
-            }
-        }).then(function () {
-            res.send(true)
-        }).catch(function () {
-            res.send(false)
-        })
+new Promise(async function (resolve, reject) {
+    try {
+        for (let i = 0; i < email.length; i++) {
+            await transporter.sendMail({
+                from: data[0].toJSON().user,
+                to: email[i],
+                subject: "A message from node mailer",
+                text: msg
+            });
+        }
+        resolve("success");
+    } catch (error) {
+        console.log(error);   // Print the real error
+        reject(error);
+    }
+})
+.then(() => {
+    res.send(true);
+})
+.catch((error) => {
+    console.log(error);
+    res.send(false);
+});
     }).catch(function (error) {
         console.log(error)
     })
