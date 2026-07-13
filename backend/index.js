@@ -41,7 +41,7 @@ app.post("/sendmail", function (req, res) {
 
     console.log("Emails:", email.length);
 
-    bulkmail.find().then(function (data) {
+    bulkmail.find().then(async function (data) {
 
         console.log("MongoDB data fetched");
 
