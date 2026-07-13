@@ -8,7 +8,7 @@ const Textarea = () => {
     const [email,setEmail] = useState([])
     function submit() {
         setStatus(true)
-        axios.post("http://localhost:3000/sendmail", {msg:msg,email:email}).then(function(data){
+        axios.post("https://bulkmailapp-bjyi.onrender.com/sendmail", {msg:msg,email:email}).then(function(data){
             if(data.data === true){
                 alert("Mail sent successfuly")
                 setStatus(false)
