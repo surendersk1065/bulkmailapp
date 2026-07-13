@@ -34,44 +34,58 @@ const bulkmail = mongoose.model("bulkmail", {}, "bulkmail")
 const nodemailer = require("nodemailer")
 
 app.post("/sendmail", function (req, res) {
-    var msg = req.body.msg
-    var email = req.body.email
+    console.log("Request received");
+
+    var msg = req.body.msg;
+    var email = req.body.email;
+
+    console.log("Emails:", email.length);
 
     bulkmail.find().then(function (data) {
+
+        console.log("MongoDB data fetched");
+
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
                 user: data[0].toJSON().user,
                 pass: data[0].toJSON().pass
             }
-        })
+        });
+
         new Promise(async function (resolve, reject) {
             try {
-                for (i = 0; i < email.length; i++) {
-                    await transporter.sendMail(
-                        {
-                            from: "surendersk1065@gmail.com",
-                            to: email[i],
-                            subject: "A message from node mailer",
-                            text: msg
-                        },
-                    )
+                for (let i = 0; i < email.length; i++) {
+                    console.log("Sending to:", email[i]);
+
+                    await transporter.sendMail({
+                        from: data[0].toJSON().user,
+                        to: email[i],
+                        subject: "A message from node mailer",
+                        text: msg
+                    });
+
+                    console.log("Sent:", email[i]);
                 }
-                resolve("success")
+
+                resolve("success");
             }
             catch (error) {
-                reject("failed")
+                console.log("Mail Error:", error);
+                reject(error);
             }
-        }).then(function () {
-            res.send(true)
-        }).catch(function () {
-            res.send(false)
         })
-    }).catch(function (error) {
-        console.log(error)
-    })
+        .then(function () {
+            console.log("Completed");
+            res.send(true);
+        })
+        .catch(function (err) {
+            console.log(err);
+            res.status(500).send(false);
+        });
 
-
-
-
-})
+    }).catch(function (err) {
+        console.log("Mongo Error:", err);
+        res.status(500).send(false);
+    });
+});
