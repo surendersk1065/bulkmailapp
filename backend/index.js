@@ -52,6 +52,8 @@ app.post("/sendmail", function (req, res) {
                 pass: data[0].toJSON().pass
             }
         });
+        await transporter.verify();
+console.log("SMTP connection successful");
 
         new Promise(async function (resolve, reject) {
             try {
