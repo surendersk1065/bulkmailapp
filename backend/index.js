@@ -11,7 +11,8 @@ app.use(express.json())
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://bulkmailapp-nine.vercel.app"
+    "https://bulkmailapp-nine.vercel.app",
+    "https://bulkmailapp-mu.vercel.app"
   ],
   methods: ["GET", "POST"],
   credentials: true
